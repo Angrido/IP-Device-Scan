@@ -1,6 +1,6 @@
 # IP Sniffer Tool 🕵️‍♂️💻
 
-A Python script to sniff network packets and detect devices connected to the network. It collects IP, MAC, hostname, and gateway info. You can filter by private or public IPs and save the results with a timestamp. 📊💾
+A Python script to sniff network packets and detect devices connected to the network. It collects IP and MAC. You can filter by private or public IPs and save the results with a timestamp. 📊💾
 
 ## Features ⚡
 - Sniff network packets and detect devices with IP and MAC addresses 🖥️
