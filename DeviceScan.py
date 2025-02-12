@@ -16,12 +16,13 @@ search_type = "total"
 ip_mac_detected = set()  # Set to track detected IPs and MACs
 interface = None
 sniffer_active = True
+subnet_filter = None
 
 def print_header():
     os.system('cls' if os.name == 'nt' else 'clear')
-    header = pyfiglet.figlet_format("IP Sniffer", font="standard")
+    header = pyfiglet.figlet_format("DeviceScan", font="standard")
     print(Fore.CYAN + header)
-    print(Fore.YELLOW + "v1.1.0")
+    print(Fore.YELLOW + "v1.2.0")
     print(Fore.YELLOW + "===============================")
     print(Fore.CYAN + "[*] Monitoring all IP packets...")
     print(Fore.YELLOW + "===============================")
@@ -45,23 +46,31 @@ def choose_interface():
         print(Fore.RED + "[!] Invalid choice. Try again...")
         choose_interface()
 
+def choose_subnet():
+    global subnet_filter
+    subnet_value = input(Fore.GREEN + "Enter the subnet (e.g., 192.168.1.0/24): ")
+    try:
+        subnet_filter = ipaddress.ip_network(subnet_value, strict=False)
+    except ValueError:
+        print(Fore.RED + "[!] Invalid subnet format. Try again...")
+        choose_subnet()
+
 def choose_search_type():
     os.system('cls' if os.name == 'nt' else 'clear')
     print_header()
     print(Fore.YELLOW + "\nChoose the search type:")
-    print(Fore.CYAN + "1. Search for private IPs only")
-    print(Fore.CYAN + "2. Search for public IPs only")
-    print(Fore.CYAN + "3. Total search (private and public)")
+    print(Fore.CYAN + "1. Total search (private IPs only from private subnets)")
+    print(Fore.CYAN + "2. Search for private IPs in a specific subnet")
     print(Fore.RED + "[!] To exit, press 'q'")
+    
     choice = input(Fore.GREEN + "Enter the corresponding number: ")
-
     global search_type
+
     if choice == "1":
-        search_type = "private"
+        search_type = "total"  # Total search is restricted to private IPs
     elif choice == "2":
-        search_type = "public"
-    elif choice == "3":
-        search_type = "total"
+        search_type = "private"
+        choose_subnet()  # Prompt for subnet only if searching for private IPs in subnet
     elif choice.lower() == 'q':
         print(Fore.RED + "Exiting...")
         sys.exit(0)
@@ -73,12 +82,12 @@ def process_packet(packet):
     try:
         ip_src = packet.ip.src
         mac_src = packet.eth.src if 'eth' in packet else "N/A"
-        ip_dst = packet.ip.dst
-        mac_dst = packet.eth.dst if 'eth' in packet else "N/A"
 
-        if search_type == "private" and not ipaddress.ip_address(ip_src).is_private:
+        # Only accept private IPs for the total search option
+        if search_type == "total" and not ipaddress.ip_address(ip_src).is_private:
             return
-        elif search_type == "public" and ipaddress.ip_address(ip_src).is_private:
+        
+        if search_type == "private" and subnet_filter and ipaddress.ip_address(ip_src) not in subnet_filter:
             return
 
         detection = (ip_src, mac_src)
@@ -108,6 +117,7 @@ def interruption_menu():
     print(Fore.RED + "q. Exit program")
     
     choice = input(Fore.GREEN + "Enter your choice: ")
+
     if choice == "1":
         ip_mac_detected.clear()
         print_header()
@@ -137,7 +147,7 @@ def start_sniffer():
         capture = pyshark.LiveCapture(interface=interface)
         for packet in capture.sniff_continuously():
             process_packet(packet)
-        
+
     except KeyboardInterrupt:
         interruption_menu()
     except Exception as e:
