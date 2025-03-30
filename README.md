@@ -19,8 +19,6 @@ A Python script designed to sniff network packets and identify devices connected
   - Modify the IP filter type 🌎  
   - Exit the program ❌  
 
-Se vuoi aggiungere altre modifiche o perfezionare il testo, fammelo sapere! 😊
-
 **Requirements 📦**
 
 - pyshark 🦈
