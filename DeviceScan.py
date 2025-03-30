@@ -5,6 +5,7 @@ import ipaddress
 import os
 import sys
 import psutil
+import socket
 from datetime import datetime
 import pyshark
 
@@ -13,19 +14,19 @@ init(autoreset=True)
 
 # Variables for scan management
 search_type = "total"
-ip_mac_detected = set()  # Set to track detected IPs and MACs
+ip_mac_detected = set()  # Set to track detected IPs, MACs, and hostnames
 interface = None
 sniffer_active = True
 subnet_filter = None
 
 def print_header():
     os.system('cls' if os.name == 'nt' else 'clear')
-    header = pyfiglet.figlet_format("DeviceScan", font="standard")
+    header = pyfiglet.figlet_format("IP Device Scan", font="standard")
     print(Fore.CYAN + header)
-    print(Fore.YELLOW + "v1.2.0")
-    print(Fore.YELLOW + "===============================")
+    print(Fore.YELLOW + "v1.3.0")
+    print(Fore.YELLOW + "==============================")
     print(Fore.CYAN + "[*] Monitoring all IP packets...")
-    print(Fore.YELLOW + "===============================")
+    print(Fore.YELLOW + "==============================")
 
 def detect_interfaces():
     available_interfaces = [iface for iface in psutil.net_if_addrs().keys()]
@@ -78,10 +79,18 @@ def choose_search_type():
         print(Fore.RED + "[!] Invalid option. Try again...")
         choose_search_type()
 
+def get_hostname(ip):
+    try:
+        hostname = socket.gethostbyaddr(ip)[0]
+        return hostname if hostname != ip else "N/A"
+    except (socket.herror, socket.gaierror):
+        return ""  # Return an empty string if hostname cannot be resolved
+
 def process_packet(packet):
     try:
         ip_src = packet.ip.src
         mac_src = packet.eth.src if 'eth' in packet else "N/A"
+        hostname = get_hostname(ip_src)
 
         # Only accept private IPs for the total search option
         if search_type == "total" and not ipaddress.ip_address(ip_src).is_private:
@@ -90,10 +99,10 @@ def process_packet(packet):
         if search_type == "private" and subnet_filter and ipaddress.ip_address(ip_src) not in subnet_filter:
             return
 
-        detection = (ip_src, mac_src)
+        detection = (ip_src, mac_src, hostname)
         if detection not in ip_mac_detected:
             ip_mac_detected.add(detection)
-            print(Fore.GREEN + f"[+] New IP/MAC found: {ip_src} ({mac_src})")
+            print(Fore.GREEN + f"[+] New Device Found: {ip_src} ({mac_src}) - Hostname: {hostname}")
 
     except AttributeError:
         pass
@@ -103,8 +112,8 @@ def save_scan():
     with open(path, "w") as file:
         file.write("Scan Results\n")
         file.write("-" * 40 + "\n")
-        for ip, mac in ip_mac_detected:
-            file.write(f"IP: {ip}\tMAC: {mac}\n")
+        for ip, mac, hostname in ip_mac_detected:
+            file.write(f"IP: {ip}\tMAC: {mac}\tHostname: {hostname}\n")
         file.write("-" * 40 + "\n")
     print(Fore.GREEN + f"[+] Scan saved at: {path}")
 
