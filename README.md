@@ -1,4 +1,4 @@
-**DeviceScan Tool 🕵️‍♂️💻**
+**IP Device Scan Tool 🕵️‍♂️💻**
 
 A Python script designed to sniff network packets and identify devices connected to the network. It captures IP and MAC addresses and allows filtering specifically for private IPs from private subnets. You can also search within specified subnets and save the results with a timestamp. 📊💾
 
