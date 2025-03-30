@@ -1,3 +1,6 @@
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](#) [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](#)
+
+
 **IP Device Scan Tool 🕵️‍♂️💻**
 
 A Python script designed to sniff network packets and identify devices connected to the network. It captures IP and MAC addresses and allows filtering specifically for private IPs from private subnets. You can also search within specified subnets and save the results with a timestamp. 📊💾
