@@ -36,48 +36,56 @@ def detect_interfaces():
     return available_interfaces
 
 def choose_interface():
-    print_header()
+    """Prompt the user to select a valid network interface."""
     global interface
-    available_interfaces = detect_interfaces()
-    choice = input(Fore.GREEN + "Enter the interface number: ")
-    try:
-        choice = int(choice)
-        interface = available_interfaces[choice]
-    except (ValueError, IndexError):
-        print(Fore.RED + "[!] Invalid choice. Try again...")
-        choose_interface()
+    while True:
+        print_header()
+        available_interfaces = detect_interfaces()
+        choice = input(Fore.GREEN + "Enter the interface number: ")
+        try:
+            interface = available_interfaces[int(choice)]
+            break
+        except (ValueError, IndexError):
+            print(Fore.RED + "[!] Invalid choice. Try again...")
 
 def choose_subnet():
+    """Ask the user for a subnet until a valid value is provided."""
     global subnet_filter
-    subnet_value = input(Fore.GREEN + "Enter the subnet (e.g., 192.168.1.0/24): ")
-    try:
-        subnet_filter = ipaddress.ip_network(subnet_value, strict=False)
-    except ValueError:
-        print(Fore.RED + "[!] Invalid subnet format. Try again...")
-        choose_subnet()
+    while True:
+        subnet_value = input(
+            Fore.GREEN + "Enter the subnet (e.g., 192.168.1.0/24): "
+        )
+        try:
+            subnet_filter = ipaddress.ip_network(subnet_value, strict=False)
+            break
+        except ValueError:
+            print(Fore.RED + "[!] Invalid subnet format. Try again...")
 
 def choose_search_type():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print_header()
-    print(Fore.YELLOW + "\nChoose the search type:")
-    print(Fore.CYAN + "1. Total search (private IPs only from private subnets)")
-    print(Fore.CYAN + "2. Search for private IPs in a specific subnet")
-    print(Fore.RED + "[!] To exit, press 'q'")
-    
-    choice = input(Fore.GREEN + "Enter the corresponding number: ")
+    """Select the search mode for the scan."""
     global search_type
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print_header()
+        print(Fore.YELLOW + "\nChoose the search type:")
+        print(Fore.CYAN + "1. Total search (private IPs only from private subnets)")
+        print(Fore.CYAN + "2. Search for private IPs in a specific subnet")
+        print(Fore.RED + "[!] To exit, press 'q'")
 
-    if choice == "1":
-        search_type = "total"  # Total search is restricted to private IPs
-    elif choice == "2":
-        search_type = "private"
-        choose_subnet()  # Prompt for subnet only if searching for private IPs in subnet
-    elif choice.lower() == 'q':
-        print(Fore.RED + "Exiting...")
-        sys.exit(0)
-    else:
-        print(Fore.RED + "[!] Invalid option. Try again...")
-        choose_search_type()
+        choice = input(Fore.GREEN + "Enter the corresponding number: ")
+
+        if choice == "1":
+            search_type = "total"  # Total search is restricted to private IPs
+            break
+        elif choice == "2":
+            search_type = "private"
+            choose_subnet()  # Prompt for subnet only if searching for private IPs in subnet
+            break
+        elif choice.lower() == 'q':
+            print(Fore.RED + "Exiting...")
+            sys.exit(0)
+        else:
+            print(Fore.RED + "[!] Invalid option. Try again...")
 
 def get_hostname(ip):
     try:
@@ -108,7 +116,13 @@ def process_packet(packet):
         pass
 
 def save_scan():
-    path = os.path.expanduser('~') + "/Downloads/scan_results_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".txt"
+    """Save the scan results to a file in the user's Downloads folder."""
+    downloads = os.path.join(os.path.expanduser("~"), "Downloads")
+    os.makedirs(downloads, exist_ok=True)
+    path = os.path.join(
+        downloads,
+        "scan_results_" + datetime.now().strftime("%Y%m%d_%H%M%S") + ".txt",
+    )
     with open(path, "w") as file:
         file.write("Scan Results\n")
         file.write("-" * 40 + "\n")
