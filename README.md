@@ -56,14 +56,3 @@ To bundle as a standalone app (e.g., with PyInstaller):
 ```bash
 pyinstaller --noconfirm --onefile --windowed ip_discovery_monitor.pyw
 ```
-
-## 🌍 Languages
-
-| Code | Language |
-| ---- | -------- |
-| en   | English  |
-| it   | Italiano |
-| fr   | Français |
-| es   | Español  |
-| de   | Deutsch  |
-
