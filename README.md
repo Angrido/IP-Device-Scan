@@ -1,36 +1,69 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](#) [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](#)
 
+# 🖧 IP Discovery Monitor
 
-**IP Device Scan Tool 🕵️‍♂️💻**
+**Real-time network device scanner with GUI**
+Built with Python + PyQt6 + PyShark — powerful, multilingual, and user-friendly.
 
-A Python script designed to sniff network packets and identify devices connected to the network. It captures IP and MAC addresses and allows filtering specifically for private IPs from private subnets. You can also search within specified subnets and save the results with a timestamp. 📊💾
+## 📸 Screenshots
 
-### **Features ⚡**  
+![IP Discovery Monitor Screenshot](https://i.imgur.com/gNr23tD.png)
 
-- Sniff network packets and detect devices with **IP, MAC addresses, and hostnames (if available)** 🖥️🔍  
-- Filter results to include only private IPs from private subnets 🌐  
-- Search for private IPs in a specific user-defined subnet 🗺️  
-- Save scan results to the Downloads folder with a timestamp ⏰  
-- Select the network interface for sniffing 🔌  
-- Access an interruption menu to:  
-  - Restart the scan 🔄  
-  - Save current results 📄  
-  - Change network interface selection 🔧  
-  - Modify the IP filter type 🌎  
-  - Exit the program ❌  
+## 🌟 Features
 
-**Requirements 📦**
+* 🔍 **Discover devices** on your local network in real-time
+* 📶 **Live packet capture** via `pyshark`
+* 📊 **Traffic chart** (if `pyqtgraph` is installed)
+* 🗂 **Sortable table** with IP, MAC, Hostname, and First Seen time
+* 📁 **Save scan reports** to `.txt`
+* 🌐 **Multi-language support**: English, Italiano, Français, Español, Deutsch
+* 🕵️ Smart filtering:
 
-- pyshark 🦈
-- colorama 🎨
-- pyfiglet ✨
-- psutil ⚙️
-- ipaddress 🌍
+  * All private IPs
+  * Devices in a specific subnet (CIDR)
 
-**Installation 🛠️**
+## 📦 Requirements
 
-To get started, install the required libraries:
+* Python 3.9+
+* OS: Windows / Linux / macOS
+* Recommended dependencies:
+
+  * `pyshark`
+  * `pyqt6`
+  * `psutil`
+  * `pyqtgraph` (optional, for traffic graph)
+
+Install required dependencies:
 
 ```bash
-pip install pyshark colorama pyfiglet psutil ipaddress
+pip install pyshark pyqt6 psutil
 ```
+
+Optional (for graph):
+
+```bash
+pip install pyqtgraph
+```
+
+## 🚀 How to Run
+
+```bash
+python ip_discovery_monitor.pyw
+```
+
+To bundle as a standalone app (e.g., with PyInstaller):
+
+```bash
+pyinstaller --noconfirm --onefile --windowed ip_discovery_monitor.pyw
+```
+
+## 🌍 Languages
+
+| Code | Language |
+| ---- | -------- |
+| en   | English  |
+| it   | Italiano |
+| fr   | Français |
+| es   | Español  |
+| de   | Deutsch  |
+
